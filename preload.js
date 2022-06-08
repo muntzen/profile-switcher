@@ -1,19 +1,11 @@
 const applescript = require('applescript')
 const {ipcRenderer} = require('electron');
 
-const selectProfile = (event) => {
-    const profileName = event.target.innerText;
-    const activateScript = `
-        tell application "System Events"
-            tell its application process "Chrome"
-                set frontmost to true
-                click menu item "${profileName}" of menu "Profiles" of menu bar 1
-            end tell
-        end tell    
-    `;
-    
-    // see if there's an argument passed in that's a URL, i could certainly do better than 
-    // "starts with http", but, meh, it'll work for my purposes for now
+const selectProfile = (event) => {    
+    // check settings...
+    // 1) see if we should close the current tab
+    // 2) see if there's an argument passed in that's a URL, i could certainly do better than 
+    //    "starts with http", but, meh, it'll work for my purposes for now
     const val = require('@electron/remote').getGlobal('sharedObject').prop1;
     const arguments = val.toString().split(',');
     let url = undefined;
@@ -23,6 +15,22 @@ const selectProfile = (event) => {
             break;
         }
     }
+
+    const profileName = event.target.innerText;
+    const chromeControl = `
+        tell window 1 of application "Chrome"
+            close (active tab)
+        end tell
+    `;
+
+    const activateScript = `
+        tell application "System Events"
+            tell its application process "Chrome"
+                ${chromeControl}
+                click menu item "${profileName}" of menu "Profiles" of menu bar 1
+            end tell
+        end tell    
+    `;
 
     if (url) {
         applescript.execString(activateScript, () => {

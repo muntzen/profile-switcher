@@ -10,7 +10,7 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
       },
-      "args" : [".", "http://mailchimp.com"],
+      "args" : [".", "http://mailchimp.com", "close-tab"],
       "outputCapture": "std"
     }
   ]
